@@ -1,4 +1,3 @@
-const fp = require('fastify-plugin');
 const WaitlistController = require('../controllers/waitlist.controller');
 
 const joinWaitlistSchema = {
@@ -40,4 +39,4 @@ async function waitlistRoutes(fastify) {
   fastify.post('/waitlist', { schema: joinWaitlistSchema }, WaitlistController.join);
 }
 
-module.exports = fp(waitlistRoutes);
+module.exports = waitlistRoutes;
