@@ -12,7 +12,9 @@ class AuthService {
                 throw new AppError('Missing required fields', 400);
             }
 
-            if(await User.findOne({ where: { email } })) {
+            const loggedInUser = await User.findOne({ where: { email } });
+
+            if(loggedInUser) {
                 throw new AppError('User already exists', 409);
             }
 
@@ -49,10 +51,15 @@ class AuthService {
 
     static async login(email, password) {
         try {
+            console.log("LOGIN SERVICE", email, password);
             if(!email || !password) {
                 throw new AppError('Missing required fields', 400);
             }
-            const user = await User.findOne({ where: { email } });
+
+            const user = await User.findOne({ 
+                where: { email },
+                attributes: ['id', 'email', 'password', 'full_name', 'profession', 'role', 'created_at', 'updated_at']
+            });
             
             if(!user) {
                 throw new AppError('User not found', 404);
@@ -62,13 +69,33 @@ class AuthService {
                 throw new AppError('Invalid role', 403);
             }
 
+            if(!user.password) {
+                throw new AppError('User password not found', 500);
+            }
+
             const isPasswordValid = await bcrypt.compare(password, user.password);
 
             if(!isPasswordValid) {
                 throw new AppError('Invalid password', 401);
             }
+
+            const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+            const expiresIn = 3600;
             
-            return user;
+            return {
+                message: 'User logged in successfully',
+                data: {
+                    id: user.id,
+                    email: user.email,
+                    full_name: user.full_name,
+                    profession: user.profession,
+                    role: user.role,
+                    accessToken,
+                    refreshToken,
+                    expiresIn,
+                },
+            };
         } catch (error) {
             // If it's already an AppError, re-throw it
             if (error instanceof AppError) {

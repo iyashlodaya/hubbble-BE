@@ -17,9 +17,10 @@ class AuthController {
 
     static async login(request, reply) {
         try {
+            console.log("LOGIN REQUEST", request.body);
             const { email, password } = request.body;
-            const user = await AuthService.login(email, password);
-            return reply.code(200).send({ message: 'User logged in successfully', data: user });
+            const { message, data } = await AuthService.login(email, password);
+            return reply.code(200).send({ message, data });
         }
         catch (error) {
             request.log.error({ err: error }, 'Failed to login user');
