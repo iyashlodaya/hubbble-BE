@@ -2,14 +2,14 @@ const { User } = require('../../models');
 const bcrypt = require('bcrypt');
 
 class AuthService {
-    static async register(email, password, full_name, profession, role) {
+    static async register(email, password, full_name, profession) {
         try {
-            if(!email || !password || !full_name || !profession || !role) {
+            const defaultRole = 'user';
+
+            if(!email || !password || !full_name || !profession) {
                 throw new Error('Missing required fields');
             }
-            if(role !== 'admin' && role !== 'user') {
-                throw new Error('Invalid role');
-            }
+
             if(await User.findOne({ where: { email } })) {
                 throw new Error('User already exists');
             }
@@ -17,7 +17,7 @@ class AuthService {
             const hashedPassword = await bcrypt.hash(password, 10);
         
 
-            const user = await User.create({ email, password: hashedPassword, full_name, profession, role });
+            const user = await User.create({ email, password: hashedPassword, full_name, profession, role: defaultRole });
             return user;
         } catch (error) {
             throw new Error(error.message);

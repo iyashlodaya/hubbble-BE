@@ -9,7 +9,6 @@ const registerSchema = {
       password: { type: 'string', minLength: 8 },
       full_name: { type: 'string' },
       profession: { type: 'string' },
-      role: { type: 'string', enum: ['admin', 'user'] },
     },
     additionalProperties: false,
   },
