@@ -3,9 +3,10 @@ const AuthService = require('../services/auth.service');
 class AuthController {
     static async register(request, reply) {
         try {
+            console.log("REGISTER REQUEST", request.body);
             const { email, password, full_name, profession } = request.body;
-            const user = await AuthService.register(email, password, full_name, profession);
-            return reply.code(201).send({ message: 'User registered successfully', data: user });
+            const { message, data } = await AuthService.register(email, password, full_name, profession);
+            return reply.code(201).send({ message, data });
         } catch (error) {
             request.log.error({ err: error }, 'Failed to register user');
             return reply.code(500).send({ message: 'Unable to register user right now' });

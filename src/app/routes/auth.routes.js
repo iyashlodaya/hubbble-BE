@@ -22,7 +22,8 @@ const registerSchema = {
           properties: {
             id: { type: 'integer' },
             email: { type: 'string' },
-            name: { type: 'string' },
+            full_name: { type: 'string' },
+            profession: { type: 'string' },
             role: { type: 'string', enum: ['admin', 'user'] },
             accessToken: { type: 'string' },
             refreshToken: { type: 'string' },

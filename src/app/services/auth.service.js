@@ -16,9 +16,25 @@ class AuthService {
 
             const hashedPassword = await bcrypt.hash(password, 10);
         
-
             const user = await User.create({ email, password: hashedPassword, full_name, profession, role: defaultRole });
-            return user;
+
+            const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+            const expiresIn = 3600;
+
+            return {
+                message: 'User registered successfully',
+                data: {
+                    id: user.id,
+                    email: user.email,
+                    full_name: user.full_name,
+                    profession: user.profession,
+                    role: user.role,
+                    accessToken,
+                    refreshToken,
+                    expiresIn,
+                },
+            };
         } catch (error) {
             throw new Error(error.message);
         }
