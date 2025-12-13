@@ -3,7 +3,7 @@ const AuthController = require('../controllers/auth.controller');
 const registerSchema = {
   body: {
     type: 'object',
-    required: ['email', 'password', 'name', 'role'],
+    required: ['email', 'password', 'full_name', 'profession'],
     properties: {
       email: { type: 'string', format: 'email' },
       password: { type: 'string', minLength: 8 },
