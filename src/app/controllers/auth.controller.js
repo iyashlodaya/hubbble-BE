@@ -9,7 +9,9 @@ class AuthController {
             return reply.code(201).send({ message, data });
         } catch (error) {
             request.log.error({ err: error }, 'Failed to register user');
-            return reply.code(500).send({ message: 'Unable to register user right now' });
+            const statusCode = error.statusCode || 500;
+            const message = error.message || 'Unable to register user right now';
+            return reply.code(statusCode).send({ message });
         }
     }
 
@@ -21,7 +23,9 @@ class AuthController {
         }
         catch (error) {
             request.log.error({ err: error }, 'Failed to login user');
-            return reply.code(500).send({ message: 'Unable to login user right now' });
+            const statusCode = error.statusCode || 500;
+            const message = error.message || 'Unable to login user right now';
+            return reply.code(statusCode).send({ message });
         }
     }
 }

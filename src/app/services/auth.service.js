@@ -1,5 +1,7 @@
 const { User } = require('../../models');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const AppError = require('../utils/AppError');
 
 class AuthService {
     static async register(email, password, full_name, profession) {
@@ -7,11 +9,11 @@ class AuthService {
             const defaultRole = 'user';
 
             if(!email || !password || !full_name || !profession) {
-                throw new Error('Missing required fields');
+                throw new AppError('Missing required fields', 400);
             }
 
             if(await User.findOne({ where: { email } })) {
-                throw new Error('User already exists');
+                throw new AppError('User already exists', 409);
             }
 
             const hashedPassword = await bcrypt.hash(password, 10);
@@ -36,34 +38,44 @@ class AuthService {
                 },
             };
         } catch (error) {
-            throw new Error(error.message);
+            // If it's already an AppError, re-throw it
+            if (error instanceof AppError) {
+                throw error;
+            }
+            // Otherwise wrap it in a generic server error
+            throw new AppError(error.message || 'Unable to register user', 500);
         }
     }
 
     static async login(email, password) {
         try {
             if(!email || !password) {
-                throw new Error('Missing required fields');
+                throw new AppError('Missing required fields', 400);
             }
             const user = await User.findOne({ where: { email } });
             
             if(!user) {
-                throw new Error('User not found');
+                throw new AppError('User not found', 404);
             }
             
             if(user.role !== 'admin' && user.role !== 'user') {
-                throw new Error('Invalid role');
+                throw new AppError('Invalid role', 403);
             }
 
             const isPasswordValid = await bcrypt.compare(password, user.password);
 
             if(!isPasswordValid) {
-                throw new Error('Invalid password');
+                throw new AppError('Invalid password', 401);
             }
             
             return user;
         } catch (error) {
-            throw new Error(error.message);
+            // If it's already an AppError, re-throw it
+            if (error instanceof AppError) {
+                throw error;
+            }
+            // Otherwise wrap it in a generic server error
+            throw new AppError(error.message || 'Unable to login user', 500);
         }
     }
 }
