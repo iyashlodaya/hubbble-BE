@@ -15,6 +15,7 @@ const common = {
         require: true,
         rejectUnauthorized: false,
       },
+      family: 4,
     },
   }),
 };
