@@ -6,7 +6,7 @@ const AppError = require('../utils/AppError');
 class AuthService {
     static async register(email, password, full_name, profession) {
         try {
-            console.log('INside Service')
+            console.log('AuthService.register: starting', { email, full_name, profession });
             const defaultRole = 'user';
 
             if (!email || !password || !full_name || !profession) {
@@ -14,7 +14,7 @@ class AuthService {
             }
 
             const loggedInUser = await User.findOne({ where: { email } });
-            console.log('User found', loggedInUser);
+            console.log('AuthService.register: existing user check result:', loggedInUser ? loggedInUser.id : 'not found');
             if (loggedInUser) {
                 throw new AppError('User already exists', 409);
             }
@@ -22,7 +22,7 @@ class AuthService {
             const hashedPassword = await bcrypt.hash(password, 10);
 
             const user = await User.create({ email, password: hashedPassword, full_name, profession, role: defaultRole });
-            console.log('User created', user);
+            console.log('AuthService.register: user created successfully', user.id);
 
             const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
             const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -42,6 +42,7 @@ class AuthService {
                 },
             };
         } catch (error) {
+            console.error('AuthService.register: error encountered', error);
             // If it's already an AppError, re-throw it
             if (error instanceof AppError) {
                 throw error;
@@ -53,7 +54,7 @@ class AuthService {
 
     static async login(email, password) {
         try {
-            console.log("LOGIN SERVICE", email, password);
+            console.log("AuthService.login: starting", { email });
             if (!email || !password) {
                 throw new AppError('Missing required fields', 400);
             }
@@ -62,6 +63,7 @@ class AuthService {
                 where: { email },
                 attributes: ['id', 'email', 'password', 'full_name', 'profession', 'role', 'created_at', 'updated_at']
             });
+            console.log('AuthService.login: user lookup result', user ? 'found' : 'not found');
 
             if (!user) {
                 throw new AppError('User not found', 404);
@@ -99,6 +101,7 @@ class AuthService {
                 },
             };
         } catch (error) {
+            console.error('AuthService.login: error encountered', error);
             // If it's already an AppError, re-throw it
             if (error instanceof AppError) {
                 throw error;
