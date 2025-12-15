@@ -1,5 +1,7 @@
-const dns = require('dns');
-dns.setDefaultResultOrder('ipv4first');
+const dns = require("dns");
+
+// Force Node to prefer IPv4 over IPv6 (critical for Render + Supabase)
+dns.setDefaultResultOrder("ipv4first");
 
 require('dotenv').config();
 const buildServer = require('./app');
