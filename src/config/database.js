@@ -8,6 +8,15 @@ const common = {
   port: Number(process.env.DB_PORT) || 5432,
   dialect: 'postgres',
   logging: false,
+  ...(process.env.DATABASE_URL && {
+    use_env_variable: 'DATABASE_URL',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
+  }),
 };
 
 module.exports = {
