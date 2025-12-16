@@ -19,6 +19,7 @@ class ProjectController {
     static async listProjects(request, reply) {
         try {
             const userId = request.user?.id;
+            console.log('User ID from request.user=====>', userId);
             const projects = await ProjectService.listProjects(userId);
             return reply.code(200).send({
                 message: 'Projects fetched successfully',

@@ -24,6 +24,36 @@ const projectIdParam = {
     additionalProperties: false,
 };
 
+const listProjectsResponse = {
+    200: {
+        type: 'object',
+        properties: {
+            message: { type: 'string' },
+            data: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    properties: {
+                        id: { type: 'integer' },
+                        name: { type: 'string' },
+                        description: { type: 'string', nullable: true },
+                        status: { type: 'string', enum: ['active', 'waiting', 'completed'] },
+                        created_at: { type: 'string' },
+                        updated_at: { type: 'string' },
+                        public_slug: { type: 'string' },
+                        client: {
+                            id: { type: 'integer' },
+                            name: { type: 'string' },
+                        }
+                    },
+                    additionalProperties: false,
+                },
+            },
+        },
+        additionalProperties: false,
+    },
+};
+
 
 async function projectsRoutes(fastify) {
     fastify.post(

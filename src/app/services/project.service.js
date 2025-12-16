@@ -1,4 +1,4 @@
-const { Project } = require('../../models');
+const { Project, Client } = require('../../models');
 const AppError = require('../utils/AppError');
 
 class ProjectService {
@@ -21,10 +21,17 @@ class ProjectService {
     }
 
     static async listProjects(userId) {
-        const where = userId ? { user_id: userId } : undefined;
+        const whereClient = userId ? { user_id: userId } : undefined;
+        const clients = await Client.findAll({ where: whereClient });
+        const clientIds = clients.map((client) => client.id);
         const projects = await Project.findAll({
-            where,
+            where: { client_id: clientIds },
             order: [['created_at', 'DESC']],
+            include: [{
+                model: Client,
+                attributes: ['name', 'id'],
+                as: 'client' // Alias the included model for clarity
+            }],
         });
         return projects;
     }
