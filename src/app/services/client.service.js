@@ -7,6 +7,14 @@ class ClientService {
       throw new AppError('Missing required fields', 400);
     }
 
+    const existingClient = await Client.findOne({
+      where: { user_id: userId, name },
+    });
+
+    if (existingClient) {
+      throw new AppError('Client with this name already exists for the user', 409);
+    }
+
     const client = await Client.create({ user_id: userId, name, email });
     return client;
   }
