@@ -78,12 +78,6 @@ class ProjectController {
         }
     }
 
-    //todo: add controller for create / add update for a specfic project.
-    //todo: add controller for delete update for a specfic project.
-    //todo: add controller for get all updates of the specific project.
-    //todo: add controller for adding file to a specific project.
-    //todo: add controller for deleting file from a specific project.
-    //todo: add controller for get all files of the specific project.
 }
 
 module.exports = ProjectController;
