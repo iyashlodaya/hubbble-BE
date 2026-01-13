@@ -23,9 +23,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      file_url: {
+      url: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      type: {
+        type: DataTypes.ENUM('link', 'file'),
+        allowNull: false,
+        defaultValue: 'file',
       },
       created_at: {
         allowNull: false,
