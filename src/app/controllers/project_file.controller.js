@@ -35,9 +35,10 @@ class ProjectFileController {
 
     static async deleteFile(request, reply) {
         try {
-            const { id } = request.params;
+            const { id, fileId } = request.params;
+            const targetId = fileId || id;
             const userId = request.user?.id;
-            await ProjectFileService.deleteFile(id, userId);
+            await ProjectFileService.deleteFile(targetId, userId);
             return reply.code(204).send();
         } catch (error) {
             request.log.error({ err: error }, 'Failed to delete file');
