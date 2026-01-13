@@ -1,5 +1,5 @@
 const ClientController = require('../controllers/client.controller');
-const requrieAuth = require('../middlewares/requrieAuth');
+const requireAuth = require('../middlewares/requireAuth');
 
 const createClientSchema = {
   body: {
@@ -50,7 +50,7 @@ async function clientRoutes(fastify) {
   fastify.post(
     '/clients',
     {
-      preHandler: requrieAuth,
+      preHandler: requireAuth,
       schema: {
         body: createClientSchema.body,
       },
@@ -61,7 +61,7 @@ async function clientRoutes(fastify) {
   fastify.get(
     '/clients',
     {
-      preHandler: requrieAuth,
+      preHandler: requireAuth,
       schema: {
         response: listClientsResponse,
       },
@@ -72,7 +72,7 @@ async function clientRoutes(fastify) {
   fastify.get(
     '/clients/:id',
     {
-      preHandler: requrieAuth,
+      preHandler: requireAuth,
       schema: {
         params: clientIdParam,
       },
@@ -83,7 +83,7 @@ async function clientRoutes(fastify) {
   fastify.delete(
     '/clients/:id',
     {
-      preHandler: requrieAuth,
+      preHandler: requireAuth,
       schema: {
         params: clientIdParam,
       },

@@ -1,7 +1,7 @@
 const ProjectController = require('../controllers/project.controller.js');
 const ProjectUpdateController = require('../controllers/project_update.controller.js');
 const ProjectFileController = require('../controllers/project_file.controller.js');
-const requrieAuth = require('../middlewares/requrieAuth');
+const requireAuth = require('../middlewares/requireAuth');
 
 const createProjectSchema = {
     body: {
@@ -100,7 +100,7 @@ async function projectsRoutes(fastify) {
     fastify.post(
         '/projects',
         {
-            preHandler: requrieAuth,
+            preHandler: requireAuth,
             schema: {
                 body: createProjectSchema.body,
             },
@@ -111,7 +111,7 @@ async function projectsRoutes(fastify) {
     fastify.get(
         '/projects',
         {
-            preHandler: requrieAuth,
+            preHandler: requireAuth,
             schema: {
                 response: listProjectsResponse,
             },
@@ -122,7 +122,7 @@ async function projectsRoutes(fastify) {
     fastify.get(
         '/projects/:id',
         {
-            preHandler: requrieAuth,
+            preHandler: requireAuth,
             schema: {
                 params: projectIdParam,
             },
@@ -134,7 +134,7 @@ async function projectsRoutes(fastify) {
     fastify.patch(
         '/projects/:id',
         {
-            preHandler: requrieAuth,
+            preHandler: requireAuth,
             schema: {
                 params: projectIdParam,
                 body: updateProjectSchema.body,
@@ -146,7 +146,7 @@ async function projectsRoutes(fastify) {
     fastify.delete(
         '/projects/:id',
         {
-            preHandler: requrieAuth,
+            preHandler: requireAuth,
             schema: {
                 params: projectIdParam,
             },
@@ -158,7 +158,7 @@ async function projectsRoutes(fastify) {
     fastify.get(
         '/projects/:id/updates',
         {
-            preHandler: requrieAuth,
+            preHandler: requireAuth,
             schema: {
                 params: projectIdParam,
             },
@@ -170,7 +170,7 @@ async function projectsRoutes(fastify) {
     fastify.post(
         '/projects/:id/updates',
         {
-            preHandler: requrieAuth,
+            preHandler: requireAuth,
             schema: {
                 params: projectIdParam,
                 body: createUpdateSchema.body,
@@ -181,9 +181,28 @@ async function projectsRoutes(fastify) {
 
     // delete the specific update of the specific project.
     fastify.delete(
+        '/projects/:id/updates/:updateId',
+        {
+            preHandler: requireAuth,
+            schema: {
+                params: {
+                    type: 'object',
+                    required: ['id', 'updateId'],
+                    properties: {
+                        id: { type: 'integer' },
+                        updateId: { type: 'integer' },
+                    },
+                    additionalProperties: false,
+                },
+            },
+        },
+        ProjectUpdateController.deleteUpdate
+    );
+
+    fastify.delete(
         '/updates/:id',
         {
-            preHandler: requrieAuth,
+            preHandler: requireAuth,
             schema: {
                 params: projectIdParam,
             },
@@ -195,7 +214,7 @@ async function projectsRoutes(fastify) {
     fastify.get(
         '/projects/:id/files',
         {
-            preHandler: requrieAuth,
+            preHandler: requireAuth,
             schema: {
                 params: projectIdParam,
             },
@@ -207,7 +226,7 @@ async function projectsRoutes(fastify) {
     fastify.post(
         '/projects/:id/files',
         {
-            preHandler: requrieAuth,
+            preHandler: requireAuth,
             schema: {
                 params: projectIdParam,
                 body: createFileSchema.body,
@@ -218,9 +237,28 @@ async function projectsRoutes(fastify) {
 
     // delete the specific file of the specific project.
     fastify.delete(
+        '/projects/:id/files/:fileId',
+        {
+            preHandler: requireAuth,
+            schema: {
+                params: {
+                    type: 'object',
+                    required: ['id', 'fileId'],
+                    properties: {
+                        id: { type: 'integer' },
+                        fileId: { type: 'integer' },
+                    },
+                    additionalProperties: false,
+                },
+            },
+        },
+        ProjectFileController.deleteFile
+    );
+
+    fastify.delete(
         '/files/:id',
         {
-            preHandler: requrieAuth,
+            preHandler: requireAuth,
             schema: {
                 params: projectIdParam,
             },
