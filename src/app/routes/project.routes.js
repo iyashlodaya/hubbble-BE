@@ -1,4 +1,6 @@
 const ProjectController = require('../controllers/project.controller.js');
+const ProjectUpdateController = require('../controllers/project_update.controller.js');
+const ProjectFileController = require('../controllers/project_file.controller.js');
 const requrieAuth = require('../middlewares/requrieAuth');
 
 const createProjectSchema = {
@@ -54,6 +56,45 @@ const listProjectsResponse = {
     },
 };
 
+// update project
+const updateProjectSchema = {
+    body: {
+        type: 'object',
+        properties: {
+            name: { type: 'string' },
+            description: { type: 'string', nullable: true },
+            status: { type: 'string', enum: ['active', 'waiting', 'completed'] },
+        },
+        additionalProperties: false,
+    },
+};
+
+// add an update to project.
+const createUpdateSchema = {
+    body: {
+        type: 'object',
+        required: ['title', 'content'],
+        properties: {
+            title: { type: 'string' },
+            content: { type: 'string' },
+        },
+        additionalProperties: false,
+    },
+};
+
+// add a file to project.
+const createFileSchema = {
+    body: {
+        type: 'object',
+        required: ['title', 'url', 'type'],
+        properties: {
+            title: { type: 'string' },
+            url: { type: 'string' },
+            type: { type: 'string', enum: ['link', 'file'] },
+        },
+        additionalProperties: false,
+    },
+};
 
 async function projectsRoutes(fastify) {
     fastify.post(
@@ -89,6 +130,19 @@ async function projectsRoutes(fastify) {
         ProjectController.getProjectById
     );
 
+// update the specific project like name, description, status.
+    fastify.patch(
+        '/projects/:id',
+        {
+            preHandler: requrieAuth,
+            schema: {
+                params: projectIdParam,
+                body: updateProjectSchema.body,
+            },
+        },
+        ProjectController.patchProject
+    );
+
     fastify.delete(
         '/projects/:id',
         {
@@ -98,6 +152,80 @@ async function projectsRoutes(fastify) {
             },
         },
         ProjectController.deleteProject
+    );
+
+    //  get all updates of the specific project.
+    fastify.get(
+        '/projects/:id/updates',
+        {
+            preHandler: requrieAuth,
+            schema: {
+                params: projectIdParam,
+            },
+        },
+        ProjectUpdateController.listUpdates
+    );
+
+    // add an update to the specific project.
+    fastify.post(
+        '/projects/:id/updates',
+        {
+            preHandler: requrieAuth,
+            schema: {
+                params: projectIdParam,
+                body: createUpdateSchema.body,
+            },
+        },
+        ProjectUpdateController.createUpdate
+    );
+
+    // delete the specific update of the specific project.
+    fastify.delete(
+        '/updates/:id',
+        {
+            preHandler: requrieAuth,
+            schema: {
+                params: projectIdParam,
+            },
+        },
+        ProjectUpdateController.deleteUpdate
+    );
+
+    // get all files of the specific project.
+    fastify.get(
+        '/projects/:id/files',
+        {
+            preHandler: requrieAuth,
+            schema: {
+                params: projectIdParam,
+            },
+        },
+        ProjectFileController.listFiles
+    );
+
+    // add a file to the specific project.
+    fastify.post(
+        '/projects/:id/files',
+        {
+            preHandler: requrieAuth,
+            schema: {
+                params: projectIdParam,
+                body: createFileSchema.body,
+            },
+        },
+        ProjectFileController.createFile
+    );
+
+    // delete the specific file of the specific project.
+    fastify.delete(
+        '/files/:id',
+        {
+            preHandler: requrieAuth,
+            schema: {
+                params: projectIdParam,
+            },
+        },
+        ProjectFileController.deleteFile
     );
 }
 

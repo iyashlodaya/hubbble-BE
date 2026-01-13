@@ -37,15 +37,29 @@ class ProjectService {
     }
 
     static async getProjectById(id, userId) {
-        const where = { id };
-        if (userId) {
-            where.user_id = userId;
-        }
+        const project = await Project.findOne({
+            where: { id },
+            include: [{
+                model: Client,
+                as: 'client',
+                where: userId ? { user_id: userId } : undefined,
+                required: true
+            }]
+        });
 
-        const project = await Project.findOne({ where });
         if (!project) {
-            throw new AppError('Project not found', 404);
+            throw new AppError('Project not found or unauthorized', 404);
         }
+        return project;
+    }
+
+    static async updateProject(id, userId, data) {
+        const project = await this.getProjectById(id, userId);
+        
+        // Exclude fields that shouldn't be updated directly via this method
+        const { id: _, client_id: __, public_slug: ___, ...updateData } = data;
+        
+        await project.update(updateData);
         return project;
     }
 

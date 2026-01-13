@@ -48,6 +48,23 @@ class ProjectController {
         }
     }
 
+    static async patchProject(request, reply) {
+        try {
+            const { id } = request.params;
+            const userId = request.user?.id;
+            const project = await ProjectService.updateProject(id, userId, request.body);
+            return reply.code(200).send({
+                message: 'Project updated successfully',
+                data: project,
+            });
+        } catch (error) {
+            request.log.error({ err: error }, 'Failed to update project');
+            const statusCode = error.statusCode || 500;
+            return reply.code(statusCode).send({ message: error.message || 'Unable to update project' });
+        }
+    }
+
+    // delete the specific project.
     static async deleteProject(request, reply) {
         try {
             const { id } = request.params;
@@ -60,6 +77,13 @@ class ProjectController {
             return reply.code(statusCode).send({ message: error.message || 'Unable to delete project' });
         }
     }
+
+    //todo: add controller for create / add update for a specfic project.
+    //todo: add controller for delete update for a specfic project.
+    //todo: add controller for get all updates of the specific project.
+    //todo: add controller for adding file to a specific project.
+    //todo: add controller for deleting file from a specific project.
+    //todo: add controller for get all files of the specific project.
 }
 
 module.exports = ProjectController;
