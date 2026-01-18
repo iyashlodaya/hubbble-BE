@@ -49,19 +49,14 @@ class ProjectUpdateService {
         return update;
     }
 
-    static async deleteUpdate(id, userId) {
-        const update = await ProjectUpdate.findByPk(id, {
-            include: [{
-                model: Project,
-                as: 'project',
-                include: [{
-                    model: Client,
-                    as: 'client',
-                    where: userId ? { user_id: userId } : undefined,
-                    required: true
-                }]
-            }]
+    static async deleteUpdate(projectId, updateId, userId) {
+        console.log("**** deleteUpdate service ****", projectId, updateId, userId);
+
+        const update = await ProjectUpdate.findOne({
+            where: {id: updateId, project_id: projectId}
         });
+
+        console.log("Project Update to be deleted", update);
 
         if (!update || !update.project) {
             throw new AppError('Update not found or unauthorized', 404);

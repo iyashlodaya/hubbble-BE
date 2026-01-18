@@ -35,10 +35,11 @@ class ProjectUpdateController {
 
     static async deleteUpdate(request, reply) {
         try {
+            console.log("**** deleteUpdate controller ****", request.params);
             const { id, updateId } = request.params;
-            const targetId = updateId || id;
             const userId = request.user?.id;
-            await ProjectUpdateService.deleteUpdate(targetId, userId);
+            console.log("**** deleteUpdate  controller 2 ****", updateId, id, userId);
+            await ProjectUpdateService.deleteUpdate(id, updateId, userId);
             return reply.code(204).send();
         } catch (error) {
             request.log.error({ err: error }, 'Failed to delete update');
