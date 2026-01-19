@@ -1,4 +1,4 @@
-const { Project, ProjectUpdate, ProjectFile } = require('../../models');
+const { Project, ProjectUpdate, ProjectFile, Client } = require('../../models');
 const AppError = require('../utils/AppError');
 
 class PublicPortalService {
@@ -6,6 +6,11 @@ class PublicPortalService {
         const project = await Project.findOne({
             where: { public_slug: slug },
             include: [
+                {
+                    model: Client,
+                    as: 'client',
+                    attributes: ['id', 'name', 'email']
+                },
                 {
                     model: ProjectUpdate,
                     as: 'updates',
