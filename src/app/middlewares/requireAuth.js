@@ -48,7 +48,8 @@ async function requireAuth(request, reply) {
     } catch (error) {
         const statusCode = error.statusCode || 401;
         // Explicitly ensuring CORS headers are present even on errors
-        reply.header('Access-Control-Allow-Origin', '*'); 
+        const origin = request.headers.origin || '*';
+        reply.header('Access-Control-Allow-Origin', origin); 
         reply.header('Access-Control-Allow-Credentials', 'true');
         return reply.code(statusCode).send({ message: error.message || 'Unauthorized' });
     }

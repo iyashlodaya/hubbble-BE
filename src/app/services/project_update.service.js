@@ -50,20 +50,17 @@ class ProjectUpdateService {
     }
 
     static async deleteUpdate(projectId, updateId, userId) {
-        console.log("**** deleteUpdate service ****", projectId, updateId, userId);
-
         const update = await ProjectUpdate.findOne({
             where: {id: updateId, project_id: projectId}
         });
 
-        console.log("Project Update to be deleted", update);
 
-        if (!update || !update.project) {
+        if (!update || update.dataValues.project_id !== projectId) {
             throw new AppError('Update not found or unauthorized', 404);
         }
 
         await update.destroy();
-        return;
+        return update;
     }
 }
 

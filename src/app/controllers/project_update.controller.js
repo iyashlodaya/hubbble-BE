@@ -39,8 +39,11 @@ class ProjectUpdateController {
             const { id, updateId } = request.params;
             const userId = request.user?.id;
             console.log("**** deleteUpdate  controller 2 ****", updateId, id, userId);
-            await ProjectUpdateService.deleteUpdate(id, updateId, userId);
-            return reply.code(204).send();
+            const deletedUpdate = await ProjectUpdateService.deleteUpdate(id, updateId, userId);
+            return reply.code(200).send({
+                message: 'Update deleted successfully',
+                data: deletedUpdate,
+            });
         } catch (error) {
             request.log.error({ err: error }, 'Failed to delete update');
             const statusCode = error.statusCode || 500;
