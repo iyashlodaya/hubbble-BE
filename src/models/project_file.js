@@ -32,6 +32,18 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: 'file',
       },
+      file_size: {
+        type: DataTypes.BIGINT,
+        allowNull: true,
+      },
+      mime_type: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      storage_path: {
+        type: DataTypes.STRING(500),
+        allowNull: true,
+      },
       created_at: {
         allowNull: false,
         type: DataTypes.DATE,

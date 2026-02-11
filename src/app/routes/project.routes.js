@@ -235,6 +235,18 @@ async function projectsRoutes(fastify) {
         ProjectFileController.createFile
     );
 
+    // upload a file to the specific project (multipart/form-data).
+    fastify.post(
+        '/projects/:id/files/upload',
+        {
+            preHandler: requireAuth,
+            schema: {
+                params: projectIdParam,
+            },
+        },
+        ProjectFileController.uploadFile
+    );
+
     // delete the specific file of the specific project.
     fastify.delete(
         '/projects/:id/files/:fileId',
