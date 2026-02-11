@@ -37,20 +37,41 @@ class ProjectService {
     }
 
     static async getProjectById(id, userId) {
+        const { User } = require('../../models');
+
         const project = await Project.findOne({
             where: { id },
             include: [{
                 model: Client,
                 as: 'client',
+                // If userId is provided, filter by it (ownership check)
                 where: userId ? { user_id: userId } : undefined,
-                required: true
+                required: true,
+                include: [{
+                    model: User,
+                    as: 'user',
+                    attributes: ['id', 'full_name', 'avatar_url', 'accent_color'],
+                }]
             }]
         });
 
         if (!project) {
             throw new AppError('Project not found or unauthorized', 404);
         }
-        return project;
+
+        // Transform response to flatten freelancer object
+        // Project -> Client -> User -> Freelancer fields
+        const projectData = project.toJSON();
+        
+        if (projectData.client && projectData.client.user) {
+            projectData.freelancer = projectData.client.user;
+            // Clean up nested structures if desired, but keeping client/user attached is also fine.
+            // Requirement says "Include a nested 'freelancer' object in response"
+            // We can optionally remove projectData.client.user if we want to avoid duplication
+            delete projectData.client.user; 
+        }
+
+        return projectData;
     }
 
     static async updateProject(id, userId, data) {
