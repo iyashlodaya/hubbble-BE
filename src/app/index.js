@@ -1,5 +1,6 @@
 const Fastify = require('fastify');
 const cors = require('@fastify/cors');
+const multipart = require('@fastify/multipart');
 const routes = require('./routes');
 
 async function buildServer() {
@@ -9,6 +10,12 @@ async function buildServer() {
     origin: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true,
+  });
+
+  await fastify.register(multipart, {
+    limits: {
+      fileSize: 5 * 1024 * 1024, // 5 MB
+    },
   });
 
   await fastify.register(routes);
