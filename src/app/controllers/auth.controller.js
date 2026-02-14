@@ -29,6 +29,18 @@ class AuthController {
             return reply.code(statusCode).send({ message });
         }
     }
+
+    static async me(request, reply) {
+        try {
+            return reply.code(200).send({
+                message: 'User retrieved successfully',
+                data: request.user
+            });
+        } catch (error) {
+            request.log.error({ err: error }, 'Failed to retrieve user');
+            return reply.code(500).send({ message: 'Unable to retrieve user' });
+        }
+    }
 }
 
 module.exports = AuthController;

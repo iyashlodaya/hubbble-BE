@@ -50,6 +50,22 @@ class ProjectUpdateController {
             return reply.code(statusCode).send({ message: error.message || 'Unable to delete update' });
         }
     }
+
+    static async getRecentUpdates(request, reply) {
+        try {
+            const userId = request.user.id;
+            const { limit } = request.query;
+            const updates = await ProjectUpdateService.getRecentUpdates(userId, parseInt(limit) || 5);
+            return reply.code(200).send({
+                message: 'Recent updates retrieved successfully',
+                data: updates,
+            });
+        } catch (error) {
+            request.log.error({ err: error }, 'Failed to fetch recent updates');
+            const statusCode = error.statusCode || 500;
+            return reply.code(statusCode).send({ message: error.message || 'Unable to fetch recent updates' });
+        }
+    }
 }
 
 module.exports = ProjectUpdateController;

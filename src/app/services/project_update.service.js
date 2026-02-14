@@ -62,6 +62,26 @@ class ProjectUpdateService {
         await update.destroy();
         return update;
     }
+
+    static async getRecentUpdates(userId, limit = 5) {
+        const updates = await ProjectUpdate.findAll({
+            limit: limit,
+            order: [['created_at', 'DESC']],
+            include: [{
+                model: Project,
+                as: 'project',
+                required: true,
+                include: [{
+                    model: Client,
+                    as: 'client',
+                    where: { user_id: userId },
+                    required: true
+                }]
+            }]
+        });
+
+        return updates;
+    }
 }
 
 module.exports = ProjectUpdateService;

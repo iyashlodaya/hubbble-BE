@@ -119,6 +119,23 @@ async function projectsRoutes(fastify) {
         ProjectController.listProjects
     );
 
+    // Get recent updates across all projects
+    fastify.get(
+        '/projects/recent-updates',
+        {
+            preHandler: requireAuth,
+            schema: {
+                querystring: {
+                    type: 'object',
+                    properties: {
+                        limit: { type: 'integer', default: 5 }
+                    }
+                }
+            }
+        },
+        ProjectUpdateController.getRecentUpdates
+    );
+
     fastify.get(
         '/projects/:id',
         {

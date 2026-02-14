@@ -1,4 +1,5 @@
 const AuthController = require('../controllers/auth.controller');
+const requireAuth = require('../middlewares/requireAuth');
 
 const registerSchema = {
   body: {
@@ -77,6 +78,9 @@ const loginSchema = {
 async function authRoutes(fastify) {
   fastify.post('/auth/register', { schema: registerSchema }, AuthController.register);
   fastify.post('/auth/login', { schema: loginSchema }, AuthController.login);
+  
+  fastify.get('/auth/me', { preHandler: requireAuth }, AuthController.me);
+
 //   fastify.post('/auth/logout', { schema: logoutSchema }, AuthController.logout);
 //   fastify.post('/auth/refresh', { schema: refreshSchema }, AuthController.refresh);
 //   fastify.post('/auth/forgot-password', { schema: forgotPasswordSchema }, AuthController.forgotPassword);
