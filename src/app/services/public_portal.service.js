@@ -3,7 +3,7 @@ const AppError = require('../utils/AppError');
 
 class PublicPortalService {
     static async getPublicPortal(slug) {
-        const { User } = require('../../models');
+        const { User, PortalBranding } = require('../../models');
 
         const project = await Project.findOne({
             where: { public_slug: slug },
@@ -15,7 +15,12 @@ class PublicPortalService {
                     include: [{
                         model: User,
                         as: 'user',
-                        attributes: ['full_name', 'avatar_url', 'accent_color'],
+                        attributes: ['id', 'full_name', 'avatar_url', 'accent_color'],
+                        include: [{
+                            model: PortalBranding,
+                            as: 'branding',
+                            attributes: ['name', 'tagline', 'accent_color', 'avatar_type', 'avatar_value'],
+                        }],
                     }]
                 },
                 {
@@ -39,6 +44,22 @@ class PublicPortalService {
 
         // Transform response: flatten freelancer details
         const projectData = project.toJSON();
+        const user = projectData.client?.user || null;
+        const branding = user?.branding || null;
+
+        // Build freelancer object: prefer branding data, fall back to user data
+        const freelancer = user
+            ? {
+                id: user.id,
+                full_name: branding?.name || user.full_name,
+                avatar_url: user.avatar_url,
+                accent_color: branding?.accent_color || user.accent_color || null,
+                tagline: branding?.tagline || null,
+                avatar_type: branding?.avatar_type || null,
+                avatar_value: branding?.avatar_value || null,
+            }
+            : null;
+
         const response = {
             project: {
                 id: projectData.id,
@@ -52,7 +73,7 @@ class PublicPortalService {
             },
             updates: projectData.updates,
             files: projectData.files,
-            freelancer: projectData.client?.user || null
+            freelancer,
         };
         
         return response;
@@ -60,3 +81,4 @@ class PublicPortalService {
 }
 
 module.exports = PublicPortalService;
+
